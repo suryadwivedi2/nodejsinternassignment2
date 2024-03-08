@@ -1,0 +1,28 @@
+#main_div {
+    box-sizing: content-box;
+    padding: 50px 100px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-top: 50px;
+    margin-left: 30%;
+    margin-bottom: 16px;
+}
+
+
+.btn-box {
+    padding: 20px;
+    margin-left: 25%;
+}
+
+.login_icon {
+    padding-left: 200px;
+}
+
+
+.signupimg {
+    height: 100px;
+}
+
+#Signup_redirect {
+    padding-left: 400px;
+}
