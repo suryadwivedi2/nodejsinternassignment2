@@ -10,6 +10,7 @@ const app = express();
 
 //getting routes
 const userroute = require('./routes/user')
+const troute = require('./routes/transaction')
 
 //middlewares
 app.use(cors());
@@ -17,6 +18,7 @@ app.use(helmet());
 app.use(bodyparser.urlencoded({ extended: false }));
 app.use(express.json());
 app.use('/user', userroute);
+app.use('/transaction', troute)
 
 
 
