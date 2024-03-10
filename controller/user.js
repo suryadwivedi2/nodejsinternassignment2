@@ -29,8 +29,8 @@ exports.addUser = async (req, res, next) => {
 
 
 //generating jwt token
-const generatetoken=({id,name,email})=>{
-    return jwt.sign({id,name,email},process.env.JWT_STRING)
+const generatetoken = ({ id, name, email, Totalincome, TotalExpense, Savings }) => {
+    return jwt.sign({ id, name, email, Totalincome, TotalExpense, Savings }, process.env.JWT_STRING)
 }
 
 
@@ -47,7 +47,7 @@ exports.loginUser = async (req, res, next) => {
                     return res.status(400).json({ user: user });
                 }
                 if (result === true) {
-                    res.status(201).json({token:generatetoken(user)});
+                    res.status(201).json({ token: generatetoken(user) });
                 }
                 if (result === false) {
                     return res.status(200).json({ "message": "Please Check your Password" });

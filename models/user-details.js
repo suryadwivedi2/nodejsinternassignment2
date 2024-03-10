@@ -13,6 +13,18 @@ const userSchema = new schema({
     password: {
         type: String,
         required: true
+    },
+    Totalincome: {
+        type: Number,
+        default: 0
+    },
+    TotalExpense: {
+        type: Number,
+        default: 0
+    },
+    Savings: {
+        type: Number,
+        default: 0
     }
 })
 

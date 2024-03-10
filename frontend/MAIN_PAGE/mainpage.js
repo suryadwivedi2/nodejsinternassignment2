@@ -34,10 +34,11 @@ async function getformvalue(event) {
             category: category,
             userid: userid
         }
-        const response = await axios.post('http://localhost:5000/transaction/add', trans_details);
+        const response = await axios.post('http://localhost:5000/transaction/add', trans_details, { headers: { 'Authorization': token } });
         if (response.status == 200) {
-            console.log(trans_details)
-            showscreenoutput(trans_details)
+            console.log(response.data.transaction)
+            addscreenoutput(response.data.transaction)
+            showdetails(response.data.totalincome, response.data.totalexpense, response.data.savings)
         } else {
             throw new Error('Something went wrong')
         }
@@ -54,6 +55,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         const response = await axios.get('http://localhost:5000/transaction/get', { headers: { 'Authorization': token } })
         if (response.status = 200) {
             showscreenoutput(response.data.transactions)
+            showdetails(response.data.totalincome, response.data.totalexpense, response.data.savings)
         } else {
             throw new Error('Something went wrong')
         }
@@ -75,12 +77,47 @@ function showscreenoutput(data) {
         li.innerText = data[i].Amount + "-" + data[i].Category;
         li.appendChild(dltbtn);
         ul.appendChild(li);
-        dltbtn.onclick = () => {
-            axios.delete(`http://localhost:5000/transaction/delete/${data[i]._id}`, { headers: { 'Authorization': token } })
-                .then((result) => {
+        dltbtn.onclick = async () => {
+            const response = await axios.delete(`http://localhost:5000/transaction/delete?id=${data[i]._id}&category=${data[i].Category}&amount=${data[i].Amount}`, { headers: { 'Authorization': token } })
+            try {
+                if (response.status == 200) {
                     console.log("deleted");
                     ul.removeChild(li);
-                }).catch(err => console.log(err));
+                    showdetails(response.data.totalincome, response.data.totalexpense, response.data.savings)
+                } else {
+                    throw new Error('Something Went Wrong')
+                }
+            } catch (err) {
+                cosnoel.log(err)
+            }
         }
     }
+}
+
+
+
+function addscreenoutput(data) {
+    const ul = document.getElementById('ul');
+    const li = document.createElement('li');
+    const dltbtn = document.createElement('input');
+    dltbtn.class = "btn-check";
+    dltbtn.type = "button";
+    dltbtn.value = "Delete";
+    li.innerText = data.Amount + "-" + data.Category;
+    li.appendChild(dltbtn);
+    ul.appendChild(li);
+    dltbtn.onclick = () => {
+        axios.delete(`http://localhost:5000/transaction/delete?id=${data._id}&category=${data.Category}&amount=${data.Amount}`, { headers: { 'Authorization': token } })
+            .then((result) => {
+                console.log("deleted");
+                ul.removeChild(li);
+            }).catch(err => console.log(err));
+    }
+
+}
+
+
+function showdetails(income, expense, saving) {
+    const div = document.getElementById('summary');
+    div.innerHTML = `<h6>TotalIncome=>${income}</h6><br><h6>TotalExpense=>${expense}</h6><br><h6>Savings=>${saving}</h6>`
 }
