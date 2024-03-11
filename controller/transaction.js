@@ -8,6 +8,7 @@ exports.addt = async (req, res, next) => {
     try {
         const amount = req.body.amount;
         const category = req.body.category;
+        const date = req.body.transaction_date;
         const userid = req.body.userid
         // console.log(amount,category,userid)
         if (category == 'income') {
@@ -20,6 +21,7 @@ exports.addt = async (req, res, next) => {
             const transaction = await Transaction.create({
                 Amount: amount,
                 Category: category,
+                Date: date,
                 userId: userid,
             })
             return res.status(200).json({

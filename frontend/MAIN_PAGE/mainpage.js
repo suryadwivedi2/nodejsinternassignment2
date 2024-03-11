@@ -27,11 +27,14 @@ async function getformvalue(event) {
     try {
         const amount = document.getElementById('amount').value;
         const category = document.getElementById('trans').value;
+        const date = document.getElementById('transdate').value;
         const userid = decodedtoken.id;
+        console.log(date);
 
         const trans_details = {
             amount: amount,
             category: category,
+            transaction_date: date,
             userid: userid
         }
         const response = await axios.post('http://localhost:5000/transaction/add', trans_details, { headers: { 'Authorization': token } });
@@ -47,7 +50,7 @@ async function getformvalue(event) {
     }
 }
 
-
+//Getting all the transaction when dom loads
 window.addEventListener('DOMContentLoaded', async () => {
     const h1 = document.getElementById('user');
     h1.innerText = `Hello ${decodedtoken.name} welcome to the Piggy Bank app`;
@@ -65,7 +68,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
 })
 
-
+//function to show output when dom content loads
 function showscreenoutput(data) {
     const ul = document.getElementById('ul');
     for (let i = 0; i < data.length; i++) {
@@ -74,7 +77,7 @@ function showscreenoutput(data) {
         dltbtn.class = "btn-check";
         dltbtn.type = "button";
         dltbtn.value = "Delete";
-        li.innerText = data[i].Amount + "-" + data[i].Category;
+        li.innerText = data[i].Amount + "-  " + data[i].Category + "-  " + data[i].Date.split("T")[0];
         li.appendChild(dltbtn);
         ul.appendChild(li);
         dltbtn.onclick = async () => {
@@ -95,7 +98,7 @@ function showscreenoutput(data) {
 }
 
 
-
+//function to show output when we add new transaction ffrom the main screem page
 function addscreenoutput(data) {
     const ul = document.getElementById('ul');
     const li = document.createElement('li');
@@ -103,20 +106,24 @@ function addscreenoutput(data) {
     dltbtn.class = "btn-check";
     dltbtn.type = "button";
     dltbtn.value = "Delete";
-    li.innerText = data.Amount + "-" + data.Category;
+    li.innerText = data.Amount + "-   " + data.Category + "-   " + data.Date.split("T")[0];
     li.appendChild(dltbtn);
     ul.appendChild(li);
-    dltbtn.onclick = () => {
-        axios.delete(`http://localhost:5000/transaction/delete?id=${data._id}&category=${data.Category}&amount=${data.Amount}`, { headers: { 'Authorization': token } })
-            .then((result) => {
-                console.log("deleted");
-                ul.removeChild(li);
-            }).catch(err => console.log(err));
+    dltbtn.onclick = async () => {
+        const response = await axios.delete(`http://localhost:5000/transaction/delete?id=${data._id}&category=${data.Category}&amount=${data.Amount}`, { headers: { 'Authorization': token } })
+        if (response.status == 200) {
+            console.log("deleted");
+            showdetails(response.data.totalincome, response.data.totalexpense, response.data.savings)
+            ul.removeChild(li);
+        } else {
+            console.log('Something Went Wrong')
+        }
+
     }
 
 }
 
-
+//function to show user details of saving expense and income dynamically
 function showdetails(income, expense, saving) {
     const div = document.getElementById('summary');
     div.innerHTML = `<h6>TotalIncome=>${income}</h6><br><h6>TotalExpense=>${expense}</h6><br><h6>Savings=>${saving}</h6>`
